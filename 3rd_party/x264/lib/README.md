@@ -6,17 +6,15 @@
    3rd_party/x264/lib/[os]/[mode] <br/>
    Where
    <br/>
-   os
-
-   	win64 (windows 64)
-   	macos - Mac
-   	linux - Linux
-
-   mode
-
-   	debug
-   	release
-
+   os <br/>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;win64 (windows 64) <br/>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;macos - Mac <br/>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;linux - Linux <br/>
+   <br/>
+   mode <br/>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; debug <br/>
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; release
+   <br/>    
    example <br/>
    3rd_party/x264/lib/win64/debug/
 
