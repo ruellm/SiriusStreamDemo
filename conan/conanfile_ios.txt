@@ -1,0 +1,12 @@
+[requires]
+glad/0.1.24@bincrafters/stable
+libsodium/1.0.18@bincrafters/stable
+vscodepropertiesgen/0.1@mkovalchik/stable
+
+[options]
+
+[generators]
+visual_studio
+cmake
+xcode
+VSCodeProperties

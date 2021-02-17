@@ -1,0 +1,23 @@
+[requires]
+#################################################################
+# REMOVE THE COMMENTED MODULES WHEN CONFIRMED WORKING IN WINDOWS
+################################################################
+
+#zlib/1.2.11
+#bzip2/1.0.8@conan/stable
+boost/1.75.0
+#libsodium/1.0.18@bincrafters/stable
+#OpenSSL/1.1.0i@conan/stable
+#protobuf/3.6.1@bincrafters/stable
+##vscodepropertiesgen/0.1@mkovalchik/stable
+
+[options]
+boost:shared=False
+boost:without_test=False
+#ncurses:shared=False
+#libsodium:fPIC=False
+
+[generators]
+visual_studio
+cmake
+xcode

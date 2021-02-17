@@ -1,0 +1,25 @@
+[requires]
+#zlib/1.2.11
+#bzip2/1.0.8@conan/stable
+
+# boost/1.75.0 has issues with conan for macos
+# https://github.com/conan-io/conan-center-index/issues/4097
+# DO NOT USE version 1.75.0 for now
+boost/1.69.0
+
+#libsodium/1.0.18
+#ncurses/6.1@conan/stable
+#OpenSSL/1.1.1a@conan/stable
+#protobuf/3.6.1@bincrafters/stable
+
+[options]
+boost:shared=False
+boost:without_test=False
+ncurses:shared=False
+ncurses:fPIC=False
+
+[generators]
+visual_studio
+cmake
+xcode
+
