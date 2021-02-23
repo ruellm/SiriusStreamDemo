@@ -36,15 +36,15 @@ private slots:
 private:
     Ui::MainWindow *ui;
 
-    bool _logged;
+    bool logged_;
 
     using ChatDialogPtr = std::shared_ptr<ChatDialog>;
-    std::vector<ChatDialogPtr> _chatDialog;
+    std::vector<ChatDialogPtr> chatDialog_;
 
-    std::unique_ptr<StreamerDialog> _streamerDialog;
+    std::unique_ptr<StreamerDialog> streamerDialog_;
 
     using ViewerDialogPtr = std::shared_ptr<ViewerDialog>;
-    std::vector<ViewerDialogPtr> _viewerDialog;
+    std::vector<ViewerDialogPtr> viewerDialog_;
 
 private:
     void AddToLog(const std::string& msg);

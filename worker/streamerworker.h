@@ -17,8 +17,8 @@ protected:
    void run() override;
 
 private:
-    VideoCaptureWorker* _capture;
-    std::unique_ptr<IVideoEncoder> _encoder;
+    VideoCaptureWorker* capture_;
+    std::unique_ptr<IVideoEncoder> encoder_;
 };
 
 #endif // STREAMERWORKER_H

@@ -57,33 +57,34 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 include_directories(3rd_party/SiriusStreamSDK/include)
 include_directories(3rd_party/x264/include)
 include_directories(3rd_party/h264/include)
-
-# Open CV
-include_directories(C:\\opencv\\build\\include)
-link_directories(C:\\opencv\\build\\x64\\vc15\\lib)
+include_directories(3rd_party/speex-1.2rc1/include)
+include_directories(3rd_party/portaudio/include)
 
 if (CMAKE_BUILD_TYPE MATCHES  "Debug")
-    list(APPEND ADDITIONAL_LINK_TARGETS "opencv_world451d")
-
     if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
         link_directories(3rd_party/x264/lib/win64/debug)
         link_directories(3rd_party/h264/lib/win64/debug)
         link_directories(3rd_party/SiriusStreamSDK/lib/win64/debug)
+        link_directories(3rd_party/speex-1.2rc1/lib/win64/debug)
+        link_directories(3rd_party/portaudio/lib/win64/debug)
+
     #elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
         # add here
     #elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
             # add here
     endif()
 else()
-    list(APPEND ADDITIONAL_LINK_TARGETS "opencv_world451")
-
-   link_directories(3rd_party/x264/lib/win64/release)
-   link_directories(3rd_party/h264/lib/win64/release)
-   link_directories(3rd_party/SiriusStreamSDK/lib/win64/release)
+  if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+        link_directories(3rd_party/x264/lib/win64/release)
+        link_directories(3rd_party/h264/lib/win64/release)
+        link_directories(3rd_party/SiriusStreamSDK/lib/win64/release)
+        link_directories(3rd_party/speex-1.2rc1/lib/win64/release)
+        link_directories(3rd_party/portaudio/lib/win64/release)
    #elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
        # add here
    #elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
            # add here
+  endif()
 endif()
 
 #x264 encoder
@@ -91,6 +92,12 @@ list(APPEND ADDITIONAL_LINK_TARGETS "x264_lib")
 
 #h264 decoder
 list(APPEND ADDITIONAL_LINK_TARGETS "H264_lib")
+
+#speex audio
+list(APPEND ADDITIONAL_LINK_TARGETS "speex_1_2rc1")
+
+#portaudio pa_stable_v190600_20161030
+list(APPEND ADDITIONAL_LINK_TARGETS "portaudio_x64")
 
 set(PROJECT_SOURCES
         main.cpp
@@ -117,8 +124,19 @@ set(PROJECT_SOURCES
 
         worker/streamerworker.cpp
         worker/streamerworker.h
-        worker/viewerworker.h
-        worker/viewerworker.cpp
+        worker/audiocaptureworker.h
+        worker/audiocaptureworker.cpp
+        worker/videoviewermanager.cpp
+        worker/videoviewermanager.h
+
+        audio/audioadapter.h
+        audio/iaudioprocessor.h
+        audio/portaudiocapture.h
+        audio/portaudiocapture.cpp
+        audio/media.h
+        audio/portaudioplayer.cpp
+        audio/portaudioplayer.h
+        audio/ivideoviewer.h
 
         backend/backend.cpp
         backend/backend.h
@@ -129,6 +147,8 @@ set(PROJECT_SOURCES
         backend/h264decoder.h
         backend/colorconverter.h
         backend/colorconverter.cpp
+        backend/speexadapter.h
+        backend/speexadapter.cpp
 
         demo_constants.h
 )

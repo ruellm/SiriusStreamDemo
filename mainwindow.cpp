@@ -1,9 +1,11 @@
 #include <QMessageBox>
 #include <QTimer>
-#include "mainwindow.h"
+
 #include "./ui_mainwindow.h"
 #include "backend/backend.h"
 #include "dialog/inputdialog.h"
+#include "audio/audioadapter.h"
+#include "mainwindow.h"
 
 void dispatchToMainThread(std::function<void()> callback)
 {
@@ -20,12 +22,13 @@ void dispatchToMainThread(std::function<void()> callback)
     });
 
     QMetaObject::invokeMethod(timer, "start", Qt::QueuedConnection, Q_ARG(int, 0));
+
 }
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , _logged(false)
+    , logged_(false)
 {
     ui->setupUi(this);
 
@@ -82,7 +85,7 @@ void MainWindow::on_loginBtn_clicked()
         AddToLog("Login succesful with Presence Key : ");
         AddToLog(key);
 
-        _logged = true;
+        logged_ = true;
     },
 
     [=](std::string msg){
@@ -137,7 +140,7 @@ void MainWindow::OnChannelCreated(const std::string& identity) {
         chat->setModal(false);
         chat->show();
 
-        _chatDialog.push_back(std::move(chat));
+        chatDialog_.push_back(std::move(chat));
     });
 }
 
@@ -153,9 +156,9 @@ void MainWindow::on_createVideoStreamBtn_clicked()
 
     backend::CreateBroadcastStream([=](backend::VideoStreamId id){
         dispatchToMainThread([=](){
-            _streamerDialog.reset(new StreamerDialog());
-            _streamerDialog->setModal(false);
-            _streamerDialog->show();
+            streamerDialog_.reset(new StreamerDialog());
+            streamerDialog_->setModal(false);
+            streamerDialog_->show();
 
             AddToLog("... Succesful! ");
             AddToLog(id);
@@ -174,5 +177,5 @@ void MainWindow::on_viewVideoStreamBtn_clicked()
     view->setModal(false);
     view->show();
 
-    _viewerDialog.push_back(std::move(view));
+    viewerDialog_.push_back(std::move(view));
 }

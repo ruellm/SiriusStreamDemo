@@ -10,6 +10,8 @@
 #include "client/media/Orientation.hpp"
 #include "client/IClientApp.hpp"
 
+#include "audio/media.h"
+
 using namespace proximax::client;
 using namespace proximax::core::signals;
 
@@ -245,6 +247,46 @@ void SendVideoFrame(uint8_t* buffer, size_t sz, int type){
     _clientApp->sendVideoFrame(frame);
 }
 
+void SendAudioFrame(uint8_t* buffer, size_t len) {
+    using namespace audio::psp;
+    using namespace  proximax::client;
+    using namespace proximax::media::sirius_stream;
+    using namespace proximax::media::palx_headless;
+
+    audio::psp::soundbuf incoming_sb;
+
+    memset((void*)&incoming_sb, 0, sizeof( audio::psp::soundbuf));
+
+    memcpy(incoming_sb.buffer.buffer_val, buffer, len);
+    incoming_sb.buffer.buffer_len = len;
+
+    incoming_sb.compression = fCompSPEEX | fProtocol;
+
+    int pktlen = sizeof(soundbuf) - BUFL + incoming_sb.buffer.buffer_len;
+       char micPacket[BUFL];
+       memcpy(micPacket, &incoming_sb, pktlen);
+       int blank_uid = 0;
+       // We have no concept of a packet 'uid' anymore.  it is only used to organize audio
+       // into channels. Will be set by packet decoding channel...
+       memcpy(micPacket + pktlen, &blank_uid, 4);
+       int pktlenFinal = 4 + pktlen;
+
+       uint8_t* frame_bytes[3];
+              int lengths[3];
+              memset(lengths, 0, sizeof(int) * 3);
+              lengths[0] = pktlenFinal;
+              frame_bytes[0] = (uint8_t*)micPacket;
+
+    IClientApp::SharedConstFrame frame(new Frame(FrameType::AUDIO,
+                                              Frame::Clock::now(),
+                                              0,
+                                              Orientation::rotate0,
+                                              lengths,
+                                              frame_bytes));
+    _clientApp->sendAudioFrame(frame);
+}
+
+
 void CreateViewerStream(std::string streamId,
                         std::function<OnStreamCreated> onCreated,
                         std::function<OnFrameReceived> onFrameReceived,
@@ -272,7 +314,28 @@ void CreateViewerStream(std::string streamId,
 
               _connectionPtrs.push_back(_clientApp->registerAudioFrameReceived(id,
                                     [=](IClientApp::SharedConstFrame frame ){
-                //TODO: support audio
+
+                  MediaFrame mframe;
+
+                  uint8_t* buffer = new uint8_t[frame->bytes[0].size()];
+                  for(size_t i = 0; i < frame->bytes[0].size(); i++) {
+                      buffer[i] = frame->bytes[0][i];
+                  }
+
+                  audio::psp::soundbuf soundBuf;
+                  memcpy(&soundBuf,buffer, frame->bytes[0].size());
+
+                  mframe.bytes = new uint8_t[soundBuf.buffer.buffer_len];
+                  memcpy(mframe.bytes, soundBuf.buffer.buffer_val, soundBuf.buffer.buffer_len);
+                  mframe.bufferSize = soundBuf.buffer.buffer_len;
+
+                  mframe.timestamp = frame->timestamp;
+                  mframe.type = (MediaFrame::Type)((uint8_t)frame->frameType);
+                  onFrameReceived(mframe);
+
+                  delete[] buffer;
+                  delete[] mframe.bytes;
+
               }));
 
               onCreated(id);

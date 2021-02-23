@@ -20,7 +20,7 @@ public:
 private:
     Ui::ChatDialog *ui;
 
-    QString _identity;
+    QString identity_;
 
 protected:
     void showEvent(QShowEvent *ev);

@@ -27,7 +27,7 @@
    <item>
     <widget class="QPushButton" name="pushButton">
      <property name="text">
-      <string>Enable Audio</string>
+      <string>Start Audio</string>
      </property>
     </widget>
    </item>

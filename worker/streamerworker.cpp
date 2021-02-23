@@ -4,17 +4,17 @@
 
 StreamerWorker::StreamerWorker(QObject *parent)
     : QThread { parent }
-    , _capture(nullptr)
+    , capture_(nullptr)
 {
-    _encoder.reset(new X264VideoEncoder());
-    _encoder->Initialize();
+    encoder_.reset(new X264VideoEncoder());
+    encoder_->Initialize();
 }
 
 void StreamerWorker::run()
 {
     while(true) {
         size_t len = 0;
-        auto buffer = _capture->GetCurrentFrameBuffer(&len);
+        auto buffer = capture_->GetCurrentFrameBuffer(&len);
         if(buffer == nullptr)
             continue;
 
@@ -22,7 +22,7 @@ void StreamerWorker::run()
         size_t outLen = 0;
         int type = 0;
 
-        _encoder->Encode(buffer, len, &output, &outLen, &type);
+        encoder_->Encode(buffer, len, &output, &outLen, &type);
 
         backend::SendVideoFrame(output, outLen, type);
 
@@ -31,5 +31,5 @@ void StreamerWorker::run()
 }
 
 void StreamerWorker::SetVideoCapture(VideoCaptureWorker* worker) {
-    _capture = worker;
+    capture_ = worker;
 }

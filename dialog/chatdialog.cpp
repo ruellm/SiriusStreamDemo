@@ -21,7 +21,7 @@ void ChatDialog::AddToLog(const std::string& msg) {
 }
 
 void ChatDialog::SetIdentity(const QString& identity) {
-    _identity = identity;
+    identity_ = identity;
 }
 
 void ChatDialog::showEvent(QShowEvent *ev)
@@ -29,11 +29,11 @@ void ChatDialog::showEvent(QShowEvent *ev)
     QDialog::showEvent(ev);
 
     ui->listWidget->addItem("Youre now connected with " +
-        _identity + ", you can now start chatting");
+        identity_ + ", you can now start chatting");
 
-    backend::SetMessageHandler(_identity.toStdString(), [=](const std::string& msg){
+    backend::SetMessageHandler(identity_.toStdString(), [=](const std::string& msg){
         dispatchToMainThread([=](){
-            AddToLog(_identity.toStdString() + " : " + msg);
+            AddToLog(identity_.toStdString() + " : " + msg);
           });
     });
 }
@@ -47,7 +47,7 @@ void ChatDialog::on_pushButton_clicked()
 
     ui->listWidget->addItem("me : " + message);
 
-    backend::SendMessage(_identity.toStdString(),
+    backend::SendMessage(identity_.toStdString(),
           message.toStdString());
 
     ui->lineEdit->setText("");

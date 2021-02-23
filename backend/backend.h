@@ -7,9 +7,10 @@
 
 namespace backend {
 
+using Clock = std::chrono::high_resolution_clock;
+using TimePoint = Clock::time_point;
+
 struct MediaFrame {
-    using Clock = std::chrono::high_resolution_clock;
-    using TimePoint = Clock::time_point;
 
     enum class Type : uint8_t {
         AUDIO = 0,
@@ -65,6 +66,8 @@ void CreateBroadcastStream(std::function<OnStreamCreated> OnCreated,
                            std::function<OnErrorEvent> onError);
 
 void SendVideoFrame(uint8_t* buffer, size_t len, int type);
+
+void SendAudioFrame(uint8_t* buffer, size_t len);
 
 void CreateViewerStream(std::string streamId,
                         std::function<OnStreamCreated> OnCreated,

@@ -9,26 +9,29 @@ extern void dispatchToMainThread(std::function<void()> callback);
 ViewerDialog::ViewerDialog(QWidget *parent) :
     QDialog(parent)
     , ui(new Ui::ViewerDialog)
-    , _worker(nullptr)
 {
     ui->setupUi(this);
-    _worker = new ViewerWorker();
 
-    connect(_worker, &ViewerWorker::frameReady, this, [&]()
+    connect(&viewerManager_, &VideoViewerManager::frameReady, this, [&](QPixmap pixmap)
     {
-        auto pixmap = _worker->GetLatestPixmap();
         if(pixmap.isNull())
             return;
 
-        ui->label->setPixmap(_worker->GetLatestPixmap().scaled(demo::IMAGE_WIDTH,
-                                                               demo::IMAGE_HEIGHT));
+        ui->label->setPixmap(pixmap.scaled(demo::IMAGE_WIDTH, demo::IMAGE_HEIGHT,
+                                           Qt::KeepAspectRatio, Qt::SmoothTransformation));
     });
+
+    player_.Initialize();
+    player_.SetViewer(&viewerManager_);
 }
 
 ViewerDialog::~ViewerDialog()
 {
     delete ui;
-    delete _worker;
+
+    viewerManager_.Stop();
+
+    player_.Stop();
 }
 
 void ViewerDialog::showEvent(QShowEvent *ev)
@@ -46,15 +49,15 @@ void ViewerDialog::showEvent(QShowEvent *ev)
        return;
     }
 
-    backend::CreateViewerStream(identity.toStdString(), [=](backend::VideoStreamId id){
-        _videoStreamId = id;
-        _worker->start(QThread::HighestPriority);
+    backend::CreateViewerStream(identity.toStdString(), [=](backend::VideoStreamId){
+       viewerManager_.Start();
     },
     [=](backend::MediaFrame frame) {
-        // pass to viewer thread for decoding
-        _worker->AddToList(frame);
-
-        // viewer thread decodes and emits signal back to this dialog for display
+        if(frame.type == backend::MediaFrame::Type::AUDIO) {
+            player_.AddData(frame.bytes, frame.bufferSize, frame.timestamp);
+        } else {
+            viewerManager_.AddToList(frame);
+        }
     },
     [=](std::string error){
         QMessageBox::critical(this, "Error", QString::fromStdString(error));
@@ -64,8 +67,21 @@ void ViewerDialog::showEvent(QShowEvent *ev)
 
 void ViewerDialog::reject()
 {
-    _worker->CleanUp();
-
+    viewerManager_.Stop();
+    player_.Stop();
     QDialog::reject();
 }
 
+
+void ViewerDialog::on_pushButton_clicked()
+{
+    if(ui->pushButton->text()=="Start Audio") {
+        ui->pushButton->setText("Stop Audio");
+
+        player_.Start();
+    }
+    else{
+        ui->pushButton->setText("Start Audio");
+       player_.Stop();
+    }
+}

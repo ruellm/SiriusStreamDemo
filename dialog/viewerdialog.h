@@ -3,7 +3,8 @@
 
 #include <QDialog>
 #include "backend/backend.h"
-#include "worker/viewerworker.h"
+#include "worker/videoviewermanager.h"
+#include "audio/portaudioplayer.h"
 
 namespace Ui {
 class ViewerDialog;
@@ -19,12 +20,14 @@ public:
 
 private:
     Ui::ViewerDialog *ui;
-    backend::VideoStreamId _videoStreamId;
-    ViewerWorker* _worker;
+    VideoViewerManager viewerManager_;
+    audio::PortAudioPlayer player_;
 
 protected:
     void showEvent(QShowEvent *ev);
     void reject() override;
+private slots:
+    void on_pushButton_clicked();
 };
 
 #endif // VIEWERDIALOG_H

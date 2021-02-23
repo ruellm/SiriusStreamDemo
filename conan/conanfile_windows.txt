@@ -10,6 +10,7 @@ boost/1.75.0
 #OpenSSL/1.1.0i@conan/stable
 #protobuf/3.6.1@bincrafters/stable
 ##vscodepropertiesgen/0.1@mkovalchik/stable
+opencv/4.5.1
 
 [options]
 boost:shared=False
