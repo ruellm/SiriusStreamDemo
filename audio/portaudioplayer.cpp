@@ -91,6 +91,8 @@ bool PortAudioPlayer::Stop() {
     if (err != paNoError)
         return false;
 
+    stream_ = nullptr;
+
     return true;
 }
 

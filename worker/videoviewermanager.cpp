@@ -64,7 +64,6 @@ void VideoViewerManager::DoDecode()
 
             if(ret)
             {
-
                 uint8_t* rgb = new uint8_t[width * height * 3];
                 colorconverter::Yuv420ProgPlanarToRgb(output, rgb, width, height);
 
